@@ -1,0 +1,93 @@
+Outputs:
+
+keypair_location = "./k3s-key-pair.pem"
+master_node_private_ip = "10.0.2.18"
+nginx_private_ip = "10.0.1.46"
+nginx_public_ip = "13.214.203.134"
+worker_node_private_ip = [
+  "10.0.2.162",
+  "10.0.2.215",
+]
+=====================================
+flask-deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-api
+  labels:
+    app: flask-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flask-api
+  template:
+    metadata:
+      labels:
+        app: flask-api
+    spec:
+      containers:
+      - name: flask-api
+        image: arifhossaincse22/flask-api:latest
+        ports:
+        - containerPort: 5000
+---
+# Flask API service
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-api
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: flask-api
+  ports:
+    - port: 5000
+      targetPort: 5000
+      nodePort: 5000
+
+
+======================
+
+react-deployment.yaml
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-app
+  labels:
+    app: react-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: react-app
+  template:
+    metadata:
+      labels:
+        app: react-app
+    spec:
+      containers:
+      - name: react-app
+        image: arifhossaincse22/react-app:latest
+        ports:
+        - containerPort: 3000
+---
+# React app service
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-app
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: react-app
+  ports:
+    - port: 3000
+      targetPort: 3000
+      nodePort: 3000
